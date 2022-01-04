@@ -3,5 +3,15 @@
     1,
     2,
     3
+  ],
+  "stocks": [
+    "tsla",
+    "amzn",
+    "AAPL",
+    "msft",
+    "goog",
+    "URTH",
+    "SS47.BE",
+    "NVDA"
   ]
 }
