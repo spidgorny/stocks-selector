@@ -3,7 +3,7 @@ import axios from "axios";
 
 const cache = setupCache({
   maxAge: 15 * 60 * 1000,
-  debug: true,
+  // debug: true,
   exclude: {
     query: false,
   },
