@@ -2,26 +2,12 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import useSWR, { mutate } from "swr";
-import { Button, Card, Stack } from "react-bootstrap";
-import React from "react";
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Button, Navbar, Stack } from "react-bootstrap";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-
-// @ts-ignore
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
-const stocksApiUrl = "/api/db/stocks";
+import { fetcher, stocksApiUrl } from "../lib/axios";
+import { SymbolInfo } from "../components/symbol-info";
 
 export default function Home() {
   let { data } = useSWR(stocksApiUrl, fetcher);
@@ -48,6 +34,7 @@ export default function Home() {
       </Head>
 
       <main>
+        <SearchAndAdd stocks={stocks} />
         {stocks?.map((symbol) => (
           <SymbolInfo key={symbol} symbol={symbol} stocks={stocks} />
         ))}
@@ -77,147 +64,32 @@ export default function Home() {
   );
 }
 
-// https://rapidapi.com/apidojo/api/yh-finance
-export function SymbolInfo({
-  symbol,
-  stocks,
-}: {
-  symbol: string;
-  stocks: string[];
-}) {
-  const { data, error } = useSWR(`/api/get-quotes?symbol=${symbol}`, fetcher);
-  const result = data?.quoteResponse?.result[0];
-
-  const del = async (delSymbol: string) => {
-    stocks = stocks.filter((x) => x !== delSymbol);
-    const res = await axios.post(stocksApiUrl, stocks);
-    await mutate(stocksApiUrl);
-  };
-
-  return (
-    <Card className="my-3">
-      <Card.Header>
-        <HStack>
-          <div>
-            <h3>{symbol}</h3>
-            <h6>
-              {result?.shortName} ${result?.regularMarketPrice} (low: $
-              {result?.fiftyTwoWeekLow}{" "}
-              <Diff
-                now={result?.regularMarketPrice}
-                vs={result?.fiftyTwoWeekLow}
-              />
-              , high: ${result?.fiftyTwoWeekHigh}{" "}
-              <Diff
-                now={result?.regularMarketPrice}
-                vs={result?.fiftyTwoWeekHigh}
-              />
-              )
-            </h6>
-          </div>
-          <Button onClick={() => del(symbol)} variant="outline-danger">
-            Del
-          </Button>
-        </HStack>
-      </Card.Header>
-      <Card.Body>
-        <SymbolChart symbol={symbol} />
-        {/*<details>*/}
-        {/*  <summary>JSON</summary>*/}
-        {/*  <pre>{JSON.stringify(result, null, 2)}</pre>*/}
-        {/*</details>*/}
-      </Card.Body>
-    </Card>
+export function SearchAndAdd({ stocks }) {
+  const [value, setValue] = useState("");
+  const { data } = useSWR(
+    value.length > 3
+      ? `/api/autocomplete?q=${encodeURIComponent(value)}`
+      : null,
+    fetcher
   );
-}
-
-export function SymbolChart({ symbol }: { symbol: string }) {
-  const { data, error } = useSWR(`/api/get-chart?symbol=${symbol}`, fetcher);
-  const result = data?.chart?.result?.[0];
-
+  const options = data?.quotes?.map((x) => `${x.shortName} [${x.quoteType}]`);
+  const add = () => {};
   return (
-    <>
-      {result && result.timestamp && <LineChart data={result} />}
-      {/*<details>*/}
-      {/*  <summary>JSON</summary>*/}
-      {/*  <pre>{JSON.stringify(result, null, 2)}</pre>*/}
-      {/*</details>*/}
-    </>
-  );
-}
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-export function LineChart({ data }: any) {
-  const options = {
-    responsive: false,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Chart.js Line Chart",
-      },
-    },
-    scales: {
-      xAxis: {
-        // The axis for this scale is determined from the first letter of the id as `'x'`
-        // It is recommended to specify `position` and / or `axis` explicitly.
-        ticks: {
-          // Include a dollar sign in the ticks
-          // callback: (value, index, ticks) => "$" + value,
-        },
-      },
-    },
-  };
-
-  const labels = data.timestamp.map((x) =>
-    new Date(x * 1000).toISOString().substring(0, 10)
-  );
-
-  const lineChart = {
-    labels,
-    datasets: [
-      {
-        label: "6 months by 1 day",
-        data: data.indicators.quote[0].close,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
-      },
-      // {
-      //   label: 'Dataset 2',
-      //   data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-      //   borderColor: 'rgb(53, 162, 235)',
-      //   backgroundColor: 'rgba(53, 162, 235, 0.5)',
-      // },
-    ],
-  };
-
-  return <Line options={options} data={lineChart} width={1024} height={350} />;
-}
-
-export function Diff({ now, vs }) {
-  const diff = now - vs;
-  return (
-    <span className={diff >= 0 ? "text-success" : "text-danger"}>
-      {diff > 0 ? "+" : ""}
-      {diff.toFixed(2)}
-    </span>
-  );
-}
-
-export function HStack({ children }) {
-  return (
-    <Stack className="w-100 justify-content-between flex-row">{children}</Stack>
+    <Navbar>
+      <form onSubmit={add}>
+        <input
+          className="form-control form-control-lg w-100"
+          type="search"
+          placeholder="stock name"
+          aria-label=".form-control-lg example"
+          value={value}
+          list="search"
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <datalist id="search">
+          {options && options?.map((x) => <option key={x}>adf</option>)}
+        </datalist>
+      </form>
+    </Navbar>
   );
 }

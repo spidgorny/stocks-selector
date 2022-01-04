@@ -16,3 +16,8 @@ export function getAxios() {
   });
   return api;
 }
+
+// @ts-ignore
+export const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
+export const stocksApiUrl = "/api/db/stocks";
