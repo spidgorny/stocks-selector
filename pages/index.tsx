@@ -15,6 +15,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // @ts-ignore
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
@@ -52,14 +53,15 @@ export default function Home() {
   );
 }
 
+// https://rapidapi.com/apidojo/api/yh-finance
 export function SymbolInfo({ symbol }: { symbol: string }) {
   const { data, error } = useSWR(`/api/get-quotes?symbol=${symbol}`, fetcher);
   const result = data?.quoteResponse?.result[0];
 
   return (
-    <Card>
+    <Card className="my-3">
       <Card.Header>
-        <h5>{symbol}</h5>
+        <h3>{symbol}</h3>
         <h6>
           {result?.shortName} ${result?.regularMarketPrice}
         </h6>
@@ -102,7 +104,8 @@ ChartJS.register(
 
 export function LineChart({ data }: any) {
   const options = {
-    responsive: true,
+    responsive: false,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         position: "top" as const,
@@ -146,5 +149,5 @@ export function LineChart({ data }: any) {
     ],
   };
 
-  return <Line options={options} data={lineChart} height={200} />;
+  return <Line options={options} data={lineChart} width={1024} height={350} />;
 }
