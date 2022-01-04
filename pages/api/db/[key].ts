@@ -10,13 +10,16 @@ const file = join(__dirname, "db.json");
 const adapter = new JSONFile(file);
 const db = new Low(adapter);
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   let output;
   const { method } = req;
   if (method === "GET") {
-    output = handleGet(req);
-  } else if (method === "GET") {
-    output = handleGet(req);
+    output = await handleGet(req);
+  } else if (method === "POST") {
+    output = await handlePost(req);
   }
   res.status(200).json(output);
 }
@@ -30,8 +33,14 @@ async function handleGet(req: NextApiRequest) {
 async function handlePost(req: NextApiRequest) {
   const start = new Date();
   await db.read();
+  db.data ||= {};
+  console.log(db.data);
+  let key = req.query.key;
+  if (!key) {
+    throw new Error("no key?");
+  }
   // @ts-ignore
-  db.data[req.query.key] = req.body;
+  db.data[key] = req.body;
   const result = await db.write();
   return {
     status: "ok",
