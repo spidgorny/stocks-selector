@@ -24,7 +24,7 @@ export function SymbolInfo({
   };
 
   return (
-    <Card className="my-3">
+    <Card className="my-3" style={{ maxWidth: 1050 }}>
       <Card.Header>
         <HStack>
           <div>

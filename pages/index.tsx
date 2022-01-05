@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { fetcher, stocksApiUrl } from "../lib/axios";
 import { SymbolInfo } from "../components/symbol-info";
+import { debounce } from "../lib/function";
 
 export default function Home() {
   let { data } = useSWR(stocksApiUrl, fetcher);
@@ -35,9 +36,11 @@ export default function Home() {
 
       <main>
         <SearchAndAdd stocks={stocks} />
-        {stocks?.map((symbol) => (
-          <SymbolInfo key={symbol} symbol={symbol} stocks={stocks} />
-        ))}
+        <Stack className="flex-row flex-wrap gap-3">
+          {stocks?.map((symbol: string) => (
+            <SymbolInfo key={symbol} symbol={symbol} stocks={stocks} />
+          ))}
+        </Stack>
         <div
           className="position-fixed"
           style={{ right: "20px", bottom: "20px" }}
@@ -64,7 +67,7 @@ export default function Home() {
   );
 }
 
-export function SearchAndAdd({ stocks }) {
+export function SearchAndAdd({ stocks }: { stocks: string[] }) {
   const [value, setValue] = useState("");
   const { data } = useSWR(
     value.length > 3
@@ -84,10 +87,10 @@ export function SearchAndAdd({ stocks }) {
           aria-label=".form-control-lg example"
           value={value}
           list="search"
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => debounce(() => setValue(e.target.value))}
         />
         <datalist id="search">
-          {options && options?.map((x) => <option key={x}>adf</option>)}
+          {options && options?.map((x: string) => <option key={x}>adf</option>)}
         </datalist>
       </form>
     </Navbar>
