@@ -7,12 +7,12 @@ export default async function handler(
 ) {
   let options = {
     method: "GET",
-    url: "https://yh-finance.p.rapidapi.com/auto-complete",
+    url: "https://query1.finance.yahoo.com/v1/finance/search",
     params: { q: req.query.q, region: "US" },
-    headers: {
-      "x-rapidapi-host": "yh-finance.p.rapidapi.com",
-      "x-rapidapi-key": "mkHMPf7Y6Gmsh7LJWjD21A9JCcOcp1oi3UEjsn6lIO6msTUt0C",
-    },
+    // headers: {
+    //   "x-rapidapi-host": "yh-finance.p.rapidapi.com",
+    //   "x-rapidapi-key": "mkHMPf7Y6Gmsh7LJWjD21A9JCcOcp1oi3UEjsn6lIO6msTUt0C",
+    // },
   };
 
   // @ts-ignore

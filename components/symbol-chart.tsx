@@ -18,13 +18,13 @@ export function SymbolChart({ symbol }: { symbol: string }) {
   const result = data?.chart?.result?.[0];
 
   return (
-    <>
+    <div>
       {result && result.timestamp && <LineChart data={result} />}
       {/*<details>*/}
       {/*  <summary>JSON</summary>*/}
       {/*  <pre>{JSON.stringify(result, null, 2)}</pre>*/}
       {/*</details>*/}
-    </>
+    </div>
   );
 }
 
@@ -40,7 +40,7 @@ ChartJS.register(
 
 export function LineChart({ data }: any) {
   const options = {
-    responsive: false,
+    responsive: true,
     maintainAspectRatio: true,
     plugins: {
       legend: {
@@ -63,7 +63,7 @@ export function LineChart({ data }: any) {
     },
   };
 
-  const labels = data.timestamp.map((x) =>
+  const labels = data.timestamp.map((x: number) =>
     new Date(x * 1000).toISOString().substring(0, 10)
   );
 
@@ -85,5 +85,5 @@ export function LineChart({ data }: any) {
     ],
   };
 
-  return <Line options={options} data={lineChart} width={1024} height={350} />;
+  return <Line options={options} data={lineChart} />;
 }

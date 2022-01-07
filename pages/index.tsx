@@ -2,8 +2,14 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import useSWR, { mutate } from "swr";
-import { Button, Navbar, Stack } from "react-bootstrap";
-import React, { useState } from "react";
+import {
+  Button,
+  ListGroup,
+  ListGroupItem,
+  Navbar,
+  Stack,
+} from "react-bootstrap";
+import React, { FormEvent, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { fetcher, stocksApiUrl } from "../lib/axios";
@@ -13,6 +19,7 @@ import { debounce } from "../lib/function";
 export default function Home() {
   let { data } = useSWR(stocksApiUrl, fetcher);
   let stocks = data ?? [];
+  let [sorting, setSorting] = useState<Record<string, number>>({});
 
   const addForm = async () => {
     const symbol = prompt("Symbol?");
@@ -26,6 +33,18 @@ export default function Home() {
     console.log(res);
   };
 
+  const setSort = (symbol: string, sort: number) => {
+    setSorting({ ...sorting, [symbol]: sort });
+    console.log(sorting);
+  };
+
+  const sortingOrder = [...stocks].sort((a, b) => sorting[a] - sorting[b]);
+  console.log({ sorting, sortingOrder });
+
+  let stocksSorted = sortingOrder?.map((symbol: string) => (
+    <SymbolInfo key={symbol} symbol={symbol} stocks={stocks} mySort={setSort} />
+  ));
+
   return (
     <div className={styles.container}>
       <Head>
@@ -36,11 +55,7 @@ export default function Home() {
 
       <main>
         <SearchAndAdd stocks={stocks} />
-        <Stack className="flex-row flex-wrap gap-3">
-          {stocks?.map((symbol: string) => (
-            <SymbolInfo key={symbol} symbol={symbol} stocks={stocks} />
-          ))}
-        </Stack>
+        <Stack className="flex-row flex-wrap gap-3">{stocksSorted}</Stack>
         <div
           className="position-fixed"
           style={{ right: "20px", bottom: "20px" }}
@@ -75,8 +90,22 @@ export function SearchAndAdd({ stocks }: { stocks: string[] }) {
       : null,
     fetcher
   );
-  const options = data?.quotes?.map((x) => `${x.shortName} [${x.quoteType}]`);
-  const add = () => {};
+  const options = data?.quotes?.map((x: any) => ({
+    symbol: x.symbol,
+    name: `${x.symbol}: ${x.shortname} [${x.quoteType}]`,
+  }));
+
+  const add = (e: FormEvent) => {
+    e.preventDefault();
+  };
+
+  const addSymbol = async (symbol: string) => {
+    stocks = [...stocks, symbol];
+    const res = await axios.post(stocksApiUrl, stocks);
+    await mutate(stocksApiUrl);
+    setValue("");
+  };
+
   return (
     <Navbar>
       <form onSubmit={add}>
@@ -87,11 +116,20 @@ export function SearchAndAdd({ stocks }: { stocks: string[] }) {
           aria-label=".form-control-lg example"
           value={value}
           list="search"
-          onChange={(e) => debounce(() => setValue(e.target.value))}
+          onChange={(e) => setValue(e.target.value)}
         />
-        <datalist id="search">
-          {options && options?.map((x: string) => <option key={x}>adf</option>)}
-        </datalist>
+        {/*<datalist id="search">*/}
+        {/*  {options &&*/}
+        {/*    options?.map((x: any) => <option key={x.symbol}>{x.name}</option>)}*/}
+        {/*</datalist>*/}
+        <ListGroup>
+          {options &&
+            options?.map((x: any) => (
+              <ListGroupItem key={x.symbol}>
+                <div onClick={() => addSymbol(x.symbol)}>{x.name}</div>
+              </ListGroupItem>
+            ))}
+        </ListGroup>
       </form>
     </Navbar>
   );

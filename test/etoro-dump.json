@@ -1,0 +1,101 @@
+[
+  {
+    "market": "BTC",
+    "units": 0.21,
+    "avgOpen": 34307.65,
+    "invested": 7048,
+    "pl$": 1456.68,
+    "plPercent": 20.67,
+    "value": 8504.68
+  },
+  {
+    "market": "GOOG",
+    "units": 2,
+    "avgOpen": 2964.75,
+    "invested": 5929.5,
+    "pl$": -428.84,
+    "plPercent": -7.23,
+    "value": 5500.66
+  },
+  {
+    "market": "GOLD",
+    "units": 4,
+    "avgOpen": 1864.08,
+    "invested": 3727.92,
+    "pl$": -294.28,
+    "plPercent": -7.89,
+    "value": 3433.64
+  },
+  {
+    "market": "AMZN",
+    "units": 1,
+    "avgOpen": 3564.77,
+    "invested": 3564.77,
+    "pl$": -296.53,
+    "plPercent": -8.32,
+    "value": 3268.24
+  },
+  {
+    "market": "FB",
+    "units": 8,
+    "avgOpen": 329.46,
+    "invested": 2635.68,
+    "pl$": 30.48,
+    "plPercent": 1.16,
+    "value": 2666.16
+  },
+  {
+    "market": "ETH",
+    "units": 0.7,
+    "avgOpen": 3256.4673,
+    "invested": 2281,
+    "pl$": -80.6,
+    "plPercent": -3.53,
+    "value": 2200.4
+  },
+  {
+    "market": "BNTX",
+    "units": 10,
+    "avgOpen": 213.31,
+    "invested": 2133.1,
+    "pl$": -11.3,
+    "plPercent": -0.53,
+    "value": 2121.8
+  },
+  {
+    "market": "AAPL",
+    "units": 10,
+    "avgOpen": 140.58,
+    "invested": 1405.8,
+    "pl$": 322,
+    "plPercent": 22.91,
+    "value": 1727.8
+  },
+  {
+    "market": "LHA.DE",
+    "units": 100,
+    "avgOpen": 9.7,
+    "invested": 1149.98,
+    "pl$": -298.29,
+    "plPercent": -25.94,
+    "value": 851.69
+  },
+  {
+    "market": "ADA",
+    "units": 470.58,
+    "avgOpen": 2.1618,
+    "invested": 1017.53,
+    "pl$": -451.52,
+    "plPercent": -44.37,
+    "value": 566.01
+  },
+  {
+    "market": "EOS",
+    "units": 104.17,
+    "avgOpen": 9.6,
+    "invested": 1000,
+    "pl$": -710.42,
+    "plPercent": -71.04,
+    "value": 289.58
+  }
+]
